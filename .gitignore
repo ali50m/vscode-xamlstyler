@@ -131,3 +131,4 @@ dist
 
 # ci generated files
 tools/xstyler
+/artifacts/
