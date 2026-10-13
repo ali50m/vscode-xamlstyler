@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.7.0]
+### Changed
+- Require .NET 10 for the bundled formatting tool.
+- Upgrade formatter, CLI and test dependencies to the latest stable versions and centralize NuGet version management.
+- Add a reproducible Native AOT build option for the CLI.
+
 ## [1.6.2]
 ### Changed
 - Publish the personal fork as markupfmt under ali50m.

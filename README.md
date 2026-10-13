@@ -20,7 +20,7 @@ Select **markupfmt** with **Format Document With...**. To use it by default:
 
 For files recognized as `xaml` or `axaml`, configure the matching language section.
 Existing `xamlstyler.*` settings remain supported.
-The bundled tool requires .NET 8 or a later runtime.
+The bundled tool requires .NET 10 or a later runtime.
 
 ## Attribution
 

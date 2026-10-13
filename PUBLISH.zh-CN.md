@@ -39,12 +39,11 @@ git status
 git branch --show-current
 ```
 
-运行测试。当前电脑只有 .NET 10 运行时，因此为 net8.0 测试开启运行时向前兼容；安装 .NET 8 后可以省略环境变量。
+运行测试。CLI 和测试项目要求 .NET 10 SDK；插件的内置工具要求 .NET 10 或更高的运行时。
 
 ```powershell
 cd src
-$env:DOTNET_ROLL_FORWARD = 'Major'
-dotnet test XamlStyler.UnitTests/XamlStyler.UnitTest.csproj
+dotnet test XamlStyler.Cli.slnx
 cd ..
 ```
 
@@ -68,7 +67,7 @@ npm version patch --no-git-tag-version
 ```powershell
 npm ci
 npm run package
-dotnet publish -f net8.0 -p:RollForward=Major -o ./tools/xstyler ./tools/XamlStyler/src/XamlStyler.Console
+dotnet publish -f net10.0 -p:RollForward=Major -o ./tools/xstyler ./tools/XamlStyler/src/XamlStyler.Console
 Copy-Item -LiteralPath ./tools/XamlStyler/LICENSE -Destination ./tools/xstyler/LICENSE
 npx --yes --package @vscode/vsce vsce package
 ```
@@ -129,43 +128,27 @@ git status
 
 ## 可选：构建独立 Native AOT EXE
 
-此步骤用于生成放到 PATH 上使用的 Windows x64 工具，与 VS Code 插件内置 DLL 的构建流程分开。保留现有 JSON 配置和依赖，不需要先迁移 System.Text.Json。
-
-在 `artifacts/xstyler-native-aot/native-aot.props` 创建以下临时构建配置。该目录已被 Git 忽略，重新克隆后需要根据本文重新创建。
-
-```xml
-<Project>
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'XamlStyler.Console'">
-    <PublishAot>true</PublishAot>
-  </PropertyGroup>
-  <ItemGroup Condition="'$(MSBuildProjectName)' == 'XamlStyler.Console'">
-    <TrimmerRootAssembly Include="xstyler" />
-    <TrimmerRootAssembly Include="XamlStyler" />
-    <TrimmerRootAssembly Include="CommandLine" />
-    <TrimmerRootAssembly Include="Newtonsoft.Json" />
-    <TrimmerRootAssembly Include="Irony" />
-  </ItemGroup>
-</Project>
-```
-
-进入 `tools/XamlStyler/src` 执行；将命令中的绝对路径替换为本机实际路径。
+从插件仓库根目录执行：
 
 ```powershell
 dotnet publish tools/XamlStyler/src/XamlStyler.Console/XamlStyler.Console.csproj `
-  -c Release -f net8.0 -r win-x64 --self-contained true `
-  -p:DirectoryBuildPropsPath=C:/Users/liu/source/repos/vscode-xamlstyler/artifacts/xstyler-native-aot/native-aot.props `
-  -p:OptimizationPreference=Size `
-  -p:DebugType=none `
-  -p:StripSymbols=true `
-  -p:PackAsTool=false `
-  -p:GeneratePackageOnBuild=false
- 
+  -c Release -f net10.0 -r win-x64 --self-contained true `
+  -p:NativeAot=true `
+  -o ./artifacts/xstyler-net10-native-aot/win-x64
 ```
 
-`PublishAot` 已在 props 中仅对命令行项目启用，不要作为全局参数重复传入，否则会影响 netstandard2.0 类库。程序集保留提示用于避免裁剪掉命令行参数解析和 JSON 配置所需的反射元数据。
+`NativeAot=true` 是本 Fork 提供的构建开关，只在 CLI 项目启用 AOT，同时设置 `OptimizationPreference=Size`、`DebugType=none`、`StripSymbols=true`，关闭 dotnet tool 打包，并保留配置和参数解析所需程序集。
 
-`OptimizationPreference=Size` 优先优化体积，`DebugType=none` 和 `StripSymbols=true` 用于调试符号处理。初始实验构建尚未使用这三项参数，优化后需要重新验证生成的 EXE；不要把旧版验证结果和 SHA256 当作新构建的结果。
+不要额外传入全局 `PublishAot=true`，否则会影响核心库的 netstandard2.0 构建。也不再需要 artifacts 中的临时 native-aot.props。
 
-Windows 构建需要 C++ 编译工具链。生成后检查 `--help`、现有 JSON 配置、Binding 等标记扩展以及连续格式化；编译中的 AOT 分析警告仍需结合实际测试评估。
+Windows 构建需要 C++ 编译工具链。虽然依赖已升级，仍可能产生 AOT 分析警告；生成后检查现有配置、Binding、Thickness 和连续格式化行为。
 
-工具通过后，将 `xstyler.exe` 放入自己的工具目录，并把该目录加入 PATH。`artifacts` 中的 EXE、PDB、ZIP、日志和临时构建文件无需提交；可复现说明保留在本发布文档中。
+独立 EXE 与插件内置的 DLL 发布流程分开。验证后将 xstyler.exe 放到工具目录，再将该目录加入 PATH。AOT 产物位于被忽略的 artifacts 目录，不提交到源码仓库。
+
+## .NET 10 升级范围
+
+核心库提供 net10.0 和 netstandard2.0 两个目标；CLI、测试使用 net10.0。底层根目录的 Directory.Packages.props 集中管理这三个项目的 NuGet 版本，global.json 选择 .NET 10 的稳定 SDK。
+
+Visual Studio 和 Rider 宿主项目不在本次升级验证范围内，保留原目标框架和依赖配置。常规开发和测试使用 src/XamlStyler.Cli.slnx，不用包含所有宿主项目的旧解决方案。
+
+Actions 显式安装 .NET 10 SDK，运行格式化核心的回归测试，再构建内置工具。将升级发布出去前，仍需先提交并推送底层变更，再在插件仓库提交子模块的新引用。
