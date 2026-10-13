@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.8.0]
+### Changed
+- Use source-generated configuration serialization in the .NET 10 formatting engine while preserving existing configuration fields and defaults.
+- Remove Native AOT reflection paths from CLI parsing and unused Irony AST construction.
+- Expand regression coverage for configuration compatibility and command-line behavior.
+
 ## [1.7.1]
 ### Fixed
 - Validate manifest and lockfile versions before publishing and report the exact workflow source commit.

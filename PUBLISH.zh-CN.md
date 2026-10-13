@@ -139,11 +139,11 @@ dotnet publish tools/XamlStyler/src/XamlStyler.Console/XamlStyler.Console.csproj
   -o ./artifacts/xstyler-net10-native-aot/win-x64
 ```
 
-`NativeAot=true` 是本 Fork 提供的构建开关，只在 CLI 项目启用 AOT，同时设置 `OptimizationPreference=Size`、`DebugType=none`、`StripSymbols=true`，关闭 dotnet tool 打包，并保留配置和参数解析所需程序集。
+`NativeAot=true` 是本 Fork 提供的构建开关，只在 CLI 项目启用 AOT，同时设置 `OptimizationPreference=Size`、`DebugType=none`、`StripSymbols=true`，关闭 dotnet tool 打包，并使用静态配置契约及 CLI 参数解析。
 
 不要额外传入全局 `PublishAot=true`，否则会影响核心库的 netstandard2.0 构建。也不再需要 artifacts 中的临时 native-aot.props。
 
-Windows 构建需要 C++ 编译工具链。虽然依赖已升级，仍可能产生 AOT 分析警告；生成后检查现有配置、Binding、Thickness 和连续格式化行为。
+Windows 构建需要 C++ 编译工具链。当前修复后的 AOT 发布命令已验证零警告；生成后仍应检查现有配置、Binding、Thickness 和连续格式化行为。
 
 独立 EXE 与插件内置的 DLL 发布流程分开。验证后将 xstyler.exe 放到工具目录，再将该目录加入 PATH。AOT 产物位于被忽略的 artifacts 目录，不提交到源码仓库。
 
@@ -154,3 +154,7 @@ Windows 构建需要 C++ 编译工具链。虽然依赖已升级，仍可能产�
 Visual Studio 和 Rider 宿主项目不在本次升级验证范围内，保留原目标框架和依赖配置。常规开发和测试使用 src/XamlStyler.Cli.slnx，不用包含所有宿主项目的旧解决方案。
 
 Actions 显式安装 .NET 10 SDK，运行格式化核心的回归测试，再构建内置工具。将升级发布出去前，仍需先提交并推送底层变更，再在插件仓库提交子模块的新引用。
+
+## AOT 构建的兼容范围
+
+.NET 10 的配置读取使用 STJ 源生成，netstandard2.0 保留原实现。独立 AOT 版本采用静态参数解析，并通过编译替换禁用 Irony 未使用的 AST 反射工厂；格式化器继续使用 ParseTree。配置兼容、参数解析和禁止误用 AST 的行为均有回归测试，详见底层仓库 UPGRADE.zh-CN.md。
