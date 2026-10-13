@@ -1,5 +1,15 @@
 # Change Log
 
+## [1.6.2]
+### Changed
+- Publish the personal fork as markupfmt under ali50m.
+- Replace deprecated GitHub release actions with the GitHub CLI.
+- Use an explicit runner image for consistent release builds.
+
+### Fixed
+- Pass marketplace tokens explicitly to the publishing tools.
+- Bundle the engine fix for accumulating blank lines before comments with preserved whitespace.
+
 ## [1.6.1]
 ### Fixed
 - Allow whitespace characters in user directory [#22](https://github.com/dabbinavo/vscode-xamlstyler/issues/22)
