@@ -52,9 +52,9 @@ jobs:
             echo "TOKEN secret not set. Skipping VSCode publication." && exit 0
           fi
           if [ "${{ inputs.prerelease }}" = "true" ]; then
-            npx vsce publish --pre-release
+            npx vsce publish --pre-release -p "$VSCE_TOKEN"
           else
-            npx vsce publish
+            npx vsce publish -p "$VSCE_TOKEN"
           fi
 
       - name: Publish Open VSX Extension
@@ -66,9 +66,9 @@ jobs:
             echo "OVSX_TOKEN secret not set. Skipping Open VSX publication." && exit 0
           fi
           if [ "${{ inputs.prerelease }}" = "true" ]; then
-            npx ovsx publish ./markupfmt-${{ env.PACKAGE_VERSION }}.vsix --pre-release
+            npx ovsx publish ./markupfmt-${{ env.PACKAGE_VERSION }}.vsix --pre-release -p "$OVSX_TOKEN"
           else
-            npx ovsx publish ./markupfmt-${{ env.PACKAGE_VERSION }}.vsix
+            npx ovsx publish ./markupfmt-${{ env.PACKAGE_VERSION }}.vsix -p "$OVSX_TOKEN"
           fi
 
       - name: Create GitHub release

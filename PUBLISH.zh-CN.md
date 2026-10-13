@@ -22,6 +22,8 @@
 
 当前工作流读取的是 `TOKEN` 和 `OVSX_TOKEN`，与 numt 仓库统一使用相同的 Secret 名称。Token 不写进源码或本文档。
 
+发布命令通过 `-p` 显式读取工作流中的 Token 环境变量，避免自定义变量名不被命令行工具自动识别。
+
 - [ ] 确认 `.gitmodules` 指向自己的底层 Fork，引用的提交已推送到 GitHub，Actions 能拉取子模块。
 - [ ] 保留插件根目录的 MIT 许可证和来源声明。工作流构建工具后会将底层许可证复制到 `tools/xstyler/LICENSE`，一起打包。
 
