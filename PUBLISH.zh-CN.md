@@ -70,7 +70,7 @@ npm ci
 npm run package
 dotnet publish -f net8.0 -p:RollForward=Major -o ./tools/xstyler ./tools/XamlStyler/src/XamlStyler.Console
 Copy-Item -LiteralPath ./tools/XamlStyler/LICENSE -Destination ./tools/xstyler/LICENSE
-npx @vscode/vsce package
+npx --yes --package @vscode/vsce vsce package
 ```
 
 安装包名为 `markupfmt-<版本号>.vsix`。检查包内包含 `dist/extension.js`、`tools/xstyler/xstyler.dll`、依赖 DLL、运行时配置和工具许可证；不要把底层源码、测试目录或本发布备忘打进安装包。
@@ -118,3 +118,11 @@ git status
 - **Token 未生效：** 检查 Secret 名称、有效期、市场账号以及发布权限；两个仓库的 Secret 不会自动共享。
 - **版本或 Release 冲突：** 核对两个市场和 GitHub 上已有版本，选择新版本号后重新提交、推送。
 - **仅发布到一个市场：** 根据失败步骤的具体原因处理；不要直接重复整个流程，以免已经成功的市场或 Release 发生版本冲突。
+
+## 发布流程的维护说明
+
+- 工作流固定使用 `ubuntu-24.04`，避免 `ubuntu-latest` 切换系统版本时影响构建；以后升级镜像时先验证构建与发布命令。
+- 打包和发布使用维护中的 `@vscode/vsce`。发布时通过 `-p` 显式传入 Token，无需登录或访问系统凭据库。
+- GitHub Release 和安装包上传使用 `gh release create`，不再使用已弃用的 `actions/create-release@v1`、`actions/upload-release-asset@v1`，避免旧 Node.js 和 `set-output` 警告。
+- Release Tag 指向本次工作流实际构建的提交 `GITHUB_SHA`，预发布选项继续生效。
+- 工作流的 GitHub 权限仅保留 `contents: write`，用于创建 Release 和上传附件。

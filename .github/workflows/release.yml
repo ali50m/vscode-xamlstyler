@@ -11,7 +11,8 @@ on:
 
 jobs:
   release:
-    permissions: write-all
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
 
     steps:
@@ -41,7 +42,7 @@ jobs:
         run: echo "PACKAGE_VERSION=$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
 
       - name: Package VSCode Extension
-        run: npx vsce package
+        run: npx --yes --package @vscode/vsce vsce package
 
       - name: Publish VSCode Extension
         continue-on-error: true
@@ -52,9 +53,9 @@ jobs:
             echo "TOKEN secret not set. Skipping VSCode publication." && exit 0
           fi
           if [ "${{ inputs.prerelease }}" = "true" ]; then
-            npx vsce publish --pre-release -p "$VSCE_TOKEN"
+            npx --yes --package @vscode/vsce vsce publish --pre-release -p "$VSCE_TOKEN"
           else
-            npx vsce publish -p "$VSCE_TOKEN"
+            npx --yes --package @vscode/vsce vsce publish -p "$VSCE_TOKEN"
           fi
 
       - name: Publish Open VSX Extension
@@ -71,24 +72,17 @@ jobs:
             npx ovsx publish ./markupfmt-${{ env.PACKAGE_VERSION }}.vsix -p "$OVSX_TOKEN"
           fi
 
-      - name: Create GitHub release
-        if: success()
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Create GitHub release and upload VSIX
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ env.PACKAGE_VERSION }}
-          release_name: v${{ env.PACKAGE_VERSION }}
-          prerelease: ${{ inputs.prerelease }}
-
-      - name: Upload VSIX to GitHub release
-        if: success()
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./markupfmt-${{ env.PACKAGE_VERSION }}.vsix
-          asset_name: markupfmt-${{ env.PACKAGE_VERSION }}.vsix
-          asset_content_type: application/vnd.microsoft.vscode.vsix
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          release_args=()
+          if [ "$PRERELEASE" = "true" ]; then
+            release_args+=(--prerelease)
+          fi
+          gh release create "v${PACKAGE_VERSION}" "./markupfmt-${PACKAGE_VERSION}.vsix" \
+            --title "v${PACKAGE_VERSION}" \
+            --target "$GITHUB_SHA" \
+            --generate-notes \
+            "${release_args[@]}"
