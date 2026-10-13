@@ -1,35 +1,28 @@
-[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/dabbinavo.xamlstyler?include_prereleases&label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=dabbinavo.xamlstyler)
-[![Open VSX Version](https://img.shields.io/open-vsx/v/dabbinavo/xamlstyler?label=Open%20VSX)](https://open-vsx.org/extension/dabbinavo/xamlstyler)
+# markupfmt
 
-# xamlstyler
-
-XAML Styler is a Visual Studio Code extension that formats AXAML/XAML files. It is a wrapper around the [Xavalon/XamlStyler](https://github.com/Xavalon/XamlStyler) Command Line .NET tool, providing seamless integration with VS Code.
-
-It is available on both the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=dabbinavo.xamlstyler) and the [Open VSX Registry](https://open-vsx.org/extension/dabbinavo/xamlstyler) (for VSCodium, Eclipse Theia, etc.).
-
-## Screenshots
-
-**Formatting a xaml file**
-![Formatting a xaml file](/media/screen-gif-1.gif)
-
-**Lots of settings for configuration**
-![Xamlstyler settings](/media/screen-gif-2.gif)
-
-**Settings.XamlStyler json schema**
-![Demonstration of the json schema](/media/screen-gif-3.gif)
+A personal markup formatter for VS Code, maintained by ali50m.
 
 ## Features
 
-- Format AXAML/XAML files
-- Provides schema for Settings.XamlStyler files
+- Format `.xaml`, `.axaml`, and `.axml` files.
+- Use workspace formatting settings or a `Settings.XamlStyler` configuration file.
+- Include a formatting engine with the preserved-whitespace comment fix.
 
-## Requirements
+## Usage
 
-- [.NET 6+ (SDK or Runtime)](https://dotnet.microsoft.com/en-us/download)
+Select **markupfmt** with **Format Document With...**. To use it by default:
 
-## Known Issues
+```json
+"[xml]": {
+  "editor.defaultFormatter": "ali50m.markupfmt"
+}
+```
 
-Feel free to contribute to the following known issues:
+For files recognized as `xaml` or `axaml`, configure the matching language section.
+Existing `xamlstyler.*` settings remain supported.
+The bundled tool requires .NET 8 or a later runtime.
 
-- There are no unit tests at all
-- Missing multi-language support
+## Attribution
+
+This extension is derived from [vscode-xamlstyler](https://github.com/dabbinavo/vscode-xamlstyler), originally authored by Christian Fischerauer and distributed under the MIT license.
+The bundled engine is derived from [Xavalon/XamlStyler](https://github.com/Xavalon/XamlStyler); its license and notices are retained with the tool.

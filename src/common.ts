@@ -16,9 +16,9 @@ export const documentSelector: vscode.DocumentFilter[] = languages.map(
 );
 
 export const outputChannel =
-  vscode.window.createOutputChannel("XAML Formatter");
+  vscode.window.createOutputChannel("markupfmt");
 
-export const extensionId = "dabbinavo.xamlstyler";
+export const extensionId = "ali50m.markupfmt";
 
 export const extensionPath =
   vscode.extensions.getExtension(extensionId)?.extensionPath;

@@ -29,7 +29,9 @@ jobs:
         run: npm install
 
       - name: Build XamlStyler tool
-        run: dotnet publish -f net8.0 -p:RollForward=Major -o ./tools/xstyler ./tools/XamlStyler/src/XamlStyler.Console
+        run: |
+          dotnet publish -f net8.0 -p:RollForward=Major -o ./tools/xstyler ./tools/XamlStyler/src/XamlStyler.Console
+          cp ./tools/XamlStyler/LICENSE ./tools/xstyler/LICENSE
 
       - name: Remove unnecessary files
         run: find ./tools/xstyler -type f \( -name '*.pdb' -o -name '*.exe' -o -name '*.deps.json' \) -delete
@@ -44,10 +46,10 @@ jobs:
       - name: Publish VSCode Extension
         continue-on-error: true
         env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          VSCE_TOKEN: ${{ secrets.TOKEN }}
         run: |
-          if [ -z "$VSCE_PAT" ]; then
-            echo "VSCE_PAT secret not set. Skipping VSCode publication." && exit 0
+          if [ -z "$VSCE_TOKEN" ]; then
+            echo "TOKEN secret not set. Skipping VSCode publication." && exit 0
           fi
           if [ "${{ inputs.prerelease }}" = "true" ]; then
             npx vsce publish --pre-release
@@ -58,15 +60,15 @@ jobs:
       - name: Publish Open VSX Extension
         continue-on-error: true
         env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+          OVSX_TOKEN: ${{ secrets.OVSX_TOKEN }}
         run: |
-          if [ -z "$OVSX_PAT" ]; then
-            echo "OVSX_PAT secret not set. Skipping Open VSX publication." && exit 0
+          if [ -z "$OVSX_TOKEN" ]; then
+            echo "OVSX_TOKEN secret not set. Skipping Open VSX publication." && exit 0
           fi
           if [ "${{ inputs.prerelease }}" = "true" ]; then
-            npx ovsx publish ./xamlstyler-${{ env.PACKAGE_VERSION }}.vsix --pre-release
+            npx ovsx publish ./markupfmt-${{ env.PACKAGE_VERSION }}.vsix --pre-release
           else
-            npx ovsx publish ./xamlstyler-${{ env.PACKAGE_VERSION }}.vsix
+            npx ovsx publish ./markupfmt-${{ env.PACKAGE_VERSION }}.vsix
           fi
 
       - name: Create GitHub release
@@ -87,6 +89,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./xamlstyler-${{ env.PACKAGE_VERSION }}.vsix
-          asset_name: xamlstyler-${{ env.PACKAGE_VERSION }}.vsix
+          asset_path: ./markupfmt-${{ env.PACKAGE_VERSION }}.vsix
+          asset_name: markupfmt-${{ env.PACKAGE_VERSION }}.vsix
           asset_content_type: application/vnd.microsoft.vscode.vsix

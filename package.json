@@ -1,20 +1,20 @@
 {
-  "name": "xamlstyler",
-  "displayName": "XAML Styler",
+  "name": "markupfmt",
+  "displayName": "markupfmt",
   "version": "1.6.1",
-  "publisher": "dabbinavo",
-  "description": "XAML Styler is used to format XAML source code based on a set of styling rules. This tool can help you/your team maintain a better XAML coding style as well as a much better XAML readability.",
+  "publisher": "ali50m",
+  "description": "Personal markup formatter for VS Code.",
   "author": {
-    "name": "Christian Fischerauer"
+    "name": "ali50m"
   },
   "license": "MIT",
   "icon": "media/logo-winui.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dabbinavo/vscode-xamlstyler"
+    "url": "https://github.com/ali50m/vscode-xamlstyler"
   },
   "bugs": {
-    "url": "https://github.com/dabbinavo/vscode-xamlstyler/issues"
+    "url": "https://github.com/ali50m/vscode-xamlstyler/issues"
   },
   "engines": {
     "vscode": "^1.94.0"
@@ -56,12 +56,12 @@
           "xamlstyler.format.enable": {
             "type": "boolean",
             "default": true,
-            "description": "Enable XAML Styler to format .xaml and .axaml files."
+            "description": "Enable markupfmt to format .xaml and .axaml files."
           },
           "xamlstyler.useGlobalTool": {
             "type": "boolean",
             "default": false,
-            "description": "Use the global XAML Styler tool instead of the bundled one."
+            "description": "Use the global formatting tool instead of the bundled one."
           }
         }
       },
@@ -91,7 +91,7 @@
           },
           "xamlstyler.attributes.formatting.tolerance": {
             "title": "Attribute Tolerance",
-            "description": "Defines the maximum number of attributes allowed on a single line. If the number of attributes exceeds this value, XAML Styler will break the attributes up across multiple lines. A value of less than 1 means always break up the attributes.",
+            "description": "Defines the maximum number of attributes allowed on a single line. If the number of attributes exceeds this value, The formatter will break the attributes up across multiple lines. A value of less than 1 means always break up the attributes.",
             "scope": "resource",
             "type": "number",
             "minimum": 0,
@@ -175,7 +175,7 @@
           },
           "xamlstyler.attributes.reordering.ruleGroups": {
             "title": "Attribute Ordering Rule Groups",
-            "description": "Defines attribute ordering rule groups. Each string element is one group. Use ',' as a delimiter between attributes. 'DOS' wildcards are allowed. XAML Styler will order attributes in groups from top to bottom, and within groups left to right.",
+            "description": "Defines attribute ordering rule groups. Each string element is one group. Use ',' as a delimiter between attributes. 'DOS' wildcards are allowed. The formatter will order attributes in groups from top to bottom, and within groups left to right.",
             "scope": "resource",
             "type": "array",
             "items": {
@@ -412,7 +412,7 @@
         "properties": {
           "xamlstyler.configurationFile.searchToDriveRoot": {
             "title": "Search to Drive Root",
-            "description": "When set to true, XAML Styler will look for an external XAML Styler configuration file not only up through your solution directory, but up through the drives root of the current solution so you can share one configuration file through multiple solutions.",
+            "description": "When set to true, The formatter will look for an external formatter configuration file not only up through your solution directory, but up through the drives root of the current solution so you can share one configuration file through multiple solutions.",
             "scope": "resource",
             "type": "boolean",
             "default": false,

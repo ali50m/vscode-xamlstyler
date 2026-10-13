@@ -9,6 +9,7 @@ tools/**
 .gitmodules
 .yarnrc
 vsc-extension-quickstart.md
+PUBLISH.zh-CN.md
 **/tsconfig.json
 **/eslint.config.mjs
 **/*.map
