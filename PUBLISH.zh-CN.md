@@ -106,6 +106,8 @@ git status
 4. 正式发布时 `prerelease` 选择 `false`；预发布选择 `true`。
 5. 运行后分别检查两个市场发布步骤和 GitHub Release 附件。
 
+发布前先确认 GitHub 上的分支已包含本次提交；本地 commit 不等于已 push。工作流的 Validate release version and source commit 步骤会输出并在运行摘要记录实际提交和版本。推送更新后使用 Run workflow 创建新运行；Re-run jobs 会重跑旧提交，不会自动使用刚推送的版本。
+
 工作流会拉取子模块、安装 npm 依赖、构建底层工具、打包，并发布到两个市场，最后上传 `.vsix` 到 GitHub Release。
 
 **不要只看整个工作流是否变绿。** 当前两个市场的发布步骤使用 `continue-on-error: true`，而且缺少 Token 时会跳过发布。需要检查每个发布步骤的日志，并确认两个市场显示预期版本。

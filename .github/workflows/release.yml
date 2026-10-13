@@ -26,6 +26,23 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Validate release version and source commit
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const manifest = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+          if (manifest.version !== lock.version || manifest.version !== lock.packages[''].version) {
+            throw new Error('package.json and package-lock.json versions do not match.');
+          }
+          fs.appendFileSync(process.env.GITHUB_ENV, 'PACKAGE_VERSION=' + manifest.version + '\n');
+          console.log('Release: ' + manifest.publisher + '.' + manifest.name + '@' + manifest.version);
+          console.log('Source commit: ' + process.env.GITHUB_SHA);
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+            'Release: `' + manifest.publisher + '.' + manifest.name + '@' + manifest.version + '`\n\n' +
+            'Source commit: `' + process.env.GITHUB_SHA + '`\n');
+          NODE
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
@@ -45,12 +62,15 @@ jobs:
       - name: Remove unnecessary files
         run: find ./tools/xstyler -type f \( -name '*.pdb' -o -name '*.exe' -o -name '*.deps.json' \) -delete
 
-      - name: Extract version from package.json
-        id: get_version
-        run: echo "PACKAGE_VERSION=$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
-
       - name: Package VSCode Extension
-        run: npx --yes --package @vscode/vsce vsce package
+        env:
+          PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          package_args=()
+          if [ "$PRERELEASE" = "true" ]; then
+            package_args+=(--pre-release)
+          fi
+          npx --yes --package @vscode/vsce vsce package --out "markupfmt-${PACKAGE_VERSION}.vsix" "${package_args[@]}"
 
       - name: Publish VSCode Extension
         continue-on-error: true
@@ -61,9 +81,9 @@ jobs:
             echo "TOKEN secret not set. Skipping VSCode publication." && exit 0
           fi
           if [ "${{ inputs.prerelease }}" = "true" ]; then
-            npx --yes --package @vscode/vsce vsce publish --pre-release -p "$VSCE_TOKEN"
+            npx --yes --package @vscode/vsce vsce publish --packagePath "markupfmt-${PACKAGE_VERSION}.vsix" --pre-release -p "$VSCE_TOKEN"
           else
-            npx --yes --package @vscode/vsce vsce publish -p "$VSCE_TOKEN"
+            npx --yes --package @vscode/vsce vsce publish --packagePath "markupfmt-${PACKAGE_VERSION}.vsix" -p "$VSCE_TOKEN"
           fi
 
       - name: Publish Open VSX Extension

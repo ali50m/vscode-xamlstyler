@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.7.1]
+### Fixed
+- Validate manifest and lockfile versions before publishing and report the exact workflow source commit.
+- Publish the packaged VSIX to both marketplaces so every release uses the same artifact.
+
 ## [1.7.0]
 ### Changed
 - Require .NET 10 for the bundled formatting tool.
