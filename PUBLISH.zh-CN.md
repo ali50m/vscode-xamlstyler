@@ -126,3 +126,46 @@ git status
 - GitHub Release 和安装包上传使用 `gh release create`，不再使用已弃用的 `actions/create-release@v1`、`actions/upload-release-asset@v1`，避免旧 Node.js 和 `set-output` 警告。
 - Release Tag 指向本次工作流实际构建的提交 `GITHUB_SHA`，预发布选项继续生效。
 - 工作流的 GitHub 权限仅保留 `contents: write`，用于创建 Release 和上传附件。
+
+## 可选：构建独立 Native AOT EXE
+
+此步骤用于生成放到 PATH 上使用的 Windows x64 工具，与 VS Code 插件内置 DLL 的构建流程分开。保留现有 JSON 配置和依赖，不需要先迁移 System.Text.Json。
+
+在 `artifacts/xstyler-native-aot/native-aot.props` 创建以下临时构建配置。该目录已被 Git 忽略，重新克隆后需要根据本文重新创建。
+
+```xml
+<Project>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'XamlStyler.Console'">
+    <PublishAot>true</PublishAot>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'XamlStyler.Console'">
+    <TrimmerRootAssembly Include="xstyler" />
+    <TrimmerRootAssembly Include="XamlStyler" />
+    <TrimmerRootAssembly Include="CommandLine" />
+    <TrimmerRootAssembly Include="Newtonsoft.Json" />
+    <TrimmerRootAssembly Include="Irony" />
+  </ItemGroup>
+</Project>
+```
+
+进入 `tools/XamlStyler/src` 执行；将命令中的绝对路径替换为本机实际路径。
+
+```powershell
+dotnet publish tools/XamlStyler/src/XamlStyler.Console/XamlStyler.Console.csproj `
+  -c Release -f net8.0 -r win-x64 --self-contained true `
+  -p:DirectoryBuildPropsPath=C:/Users/liu/source/repos/vscode-xamlstyler/artifacts/xstyler-native-aot/native-aot.props `
+  -p:OptimizationPreference=Size `
+  -p:DebugType=none `
+  -p:StripSymbols=true `
+  -p:PackAsTool=false `
+  -p:GeneratePackageOnBuild=false
+ 
+```
+
+`PublishAot` 已在 props 中仅对命令行项目启用，不要作为全局参数重复传入，否则会影响 netstandard2.0 类库。程序集保留提示用于避免裁剪掉命令行参数解析和 JSON 配置所需的反射元数据。
+
+`OptimizationPreference=Size` 优先优化体积，`DebugType=none` 和 `StripSymbols=true` 用于调试符号处理。初始实验构建尚未使用这三项参数，优化后需要重新验证生成的 EXE；不要把旧版验证结果和 SHA256 当作新构建的结果。
+
+Windows 构建需要 C++ 编译工具链。生成后检查 `--help`、现有 JSON 配置、Binding 等标记扩展以及连续格式化；编译中的 AOT 分析警告仍需结合实际测试评估。
+
+工具通过后，将 `xstyler.exe` 放入自己的工具目录，并把该目录加入 PATH。`artifacts` 中的 EXE、PDB、ZIP、日志和临时构建文件无需提交；可复现说明保留在本发布文档中。
