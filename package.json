@@ -1,7 +1,7 @@
 {
-  "name": "markupfmt",
-  "displayName": "markupfmt",
-  "version": "1.8.0",
+  "name": "mfmt",
+  "displayName": "mfmt",
+  "version": "1.8.1",
   "publisher": "ali50m",
   "description": "Personal markup formatter for VS Code.",
   "author": {
@@ -56,7 +56,7 @@
           "xamlstyler.format.enable": {
             "type": "boolean",
             "default": true,
-            "description": "Enable markupfmt to format .xaml and .axaml files."
+            "description": "Enable mfmt to format .xaml and .axaml files."
           },
           "xamlstyler.useGlobalTool": {
             "type": "boolean",

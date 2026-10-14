@@ -1,6 +1,6 @@
-# markupfmt 发布备忘
+# mfmt 发布备忘
 
-这份文档用于维护和发布自己的扩展。仓库名称仍为 `vscode-xamlstyler`，扩展名称为 `markupfmt`，发布者为 `ali50m`，扩展 ID 为 `ali50m.markupfmt`。
+这份文档用于维护和发布自己的扩展。仓库名称仍为 `vscode-xamlstyler`，扩展名称为 `mfmt`，发布者为 `ali50m`，扩展 ID 为 `ali50m.mfmt`。
 
 ## 两个仓库的关系
 
@@ -11,7 +11,7 @@
 
 ## 首次发布前配置
 
-- [ ] 确认 `package.json` 的 `name` 为 `markupfmt`、`publisher` 为 `ali50m`，`src/common.ts` 的扩展 ID 为 `ali50m.markupfmt`。
+- [ ] 确认 `package.json` 的 `name` 为 `mfmt`、`publisher` 为 `ali50m`，`src/common.ts` 的扩展 ID 为 `ali50m.mfmt`。
 - [ ] 确认 VS Code Marketplace 发布者和 Open VSX 命名空间均为 `ali50m`，且相应 Token 有发布权限。
 - [ ] 在插件仓库的 **Settings → Secrets and variables → Actions → Repository secrets** 配置下表中的两个 Secret。
 
@@ -72,15 +72,15 @@ Copy-Item -LiteralPath ./tools/XamlStyler/LICENSE -Destination ./tools/xstyler/L
 npx --yes --package @vscode/vsce vsce package
 ```
 
-安装包名为 `markupfmt-<版本号>.vsix`。检查包内包含 `dist/extension.js`、`tools/xstyler/xstyler.dll`、依赖 DLL、运行时配置和工具许可证；不要把底层源码、测试目录或本发布备忘打进安装包。
+安装包名为 `mfmt-<版本号>.vsix`。检查包内包含 `dist/extension.js`、`tools/xstyler/xstyler.dll`、依赖 DLL、运行时配置和工具许可证；不要把底层源码、测试目录或本发布备忘打进安装包。
 
-在 VS Code 执行 **Extensions: Install from VSIX...**，安装生成的包。将 markupfmt 选为目标文件的默认格式化器，确认 `xamlstyler.useGlobalTool` 为 `false`，以便测试本次打包的工具。
+在 VS Code 执行 **Extensions: Install from VSIX...**，安装生成的包。将 mfmt 选为目标文件的默认格式化器，确认 `xamlstyler.useGlobalTool` 为 `false`，以便测试本次打包的工具。
 
 针对已修复的问题：连续格式化带 `xml:space="preserve"` 和注释的文件，确认注释前空行不再增加，字符串首尾空格保持一致。安装新扩展不会自动把旧扩展的默认格式化器设置迁移过来：
 
 ```json
 "[xml]": {
-  "editor.defaultFormatter": "ali50m.markupfmt"
+  "editor.defaultFormatter": "ali50m.mfmt"
 }
 ```
 
@@ -114,7 +114,7 @@ git status
 
 ## 常见排查
 
-- **旧问题还在：** 检查默认格式化器是否为 `ali50m.markupfmt`、是否误用了全局工具，以及安装包是否包含最新底层提交的构建结果。
+- **旧问题还在：** 检查默认格式化器是否为 `ali50m.mfmt`、是否误用了全局工具，以及安装包是否包含最新底层提交的构建结果。
 - **Actions 拉不到底层提交：** 检查底层提交是否已经推送，以及外层引用是否正确。仅修改底层文件、没有提交和推送，不会出现在远程构建中。
 - **Token 未生效：** 检查 Secret 名称、有效期、市场账号以及发布权限；两个仓库的 Secret 不会自动共享。
 - **版本或 Release 冲突：** 核对两个市场和 GitHub 上已有版本，选择新版本号后重新提交、推送。

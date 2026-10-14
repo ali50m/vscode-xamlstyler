@@ -1,4 +1,4 @@
-# markupfmt
+# mfmt
 
 A personal markup formatter for VS Code, maintained by ali50m.
 
@@ -10,11 +10,11 @@ A personal markup formatter for VS Code, maintained by ali50m.
 
 ## Usage
 
-Select **markupfmt** with **Format Document With...**. To use it by default:
+Select **mfmt** with **Format Document With...**. To use it by default:
 
 ```json
 "[xml]": {
-  "editor.defaultFormatter": "ali50m.markupfmt"
+  "editor.defaultFormatter": "ali50m.mfmt"
 }
 ```
 

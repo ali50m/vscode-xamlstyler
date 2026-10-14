@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.8.1]
+### Changed
+- Rename the extension to mfmt with extension ID `ali50m.mfmt`.
+- Update marketplace publishing and GitHub Release artifacts to use the mfmt package name.
+
 ## [1.8.0]
 ### Changed
 - Use source-generated configuration serialization in the .NET 10 formatting engine while preserving existing configuration fields and defaults.
@@ -19,7 +24,7 @@
 
 ## [1.6.2]
 ### Changed
-- Publish the personal fork as markupfmt under ali50m.
+- Publish the personal fork as mfmt under ali50m.
 - Replace deprecated GitHub release actions with the GitHub CLI.
 - Use an explicit runner image for consistent release builds.
 

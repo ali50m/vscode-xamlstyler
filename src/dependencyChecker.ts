@@ -41,7 +41,7 @@ export class DependencyChecker {
     return new Promise((resolve) => {
       if (missingDependencies.includes(Dependencies.DotnetSdk)) {
         let message =
-          "markupfmt requires .NET SDK or Runtime to be installed.";
+          "mfmt requires .NET SDK or Runtime to be installed.";
         vscode.window
           .showInformationMessage(message, "Install", "Cancel")
           .then((selection) => {
@@ -51,7 +51,7 @@ export class DependencyChecker {
               );
             } else if (selection === "Cancel") {
               vscode.window.showErrorMessage(
-                "markupfmt will not work without .NET SDK or Runtime."
+                "mfmt will not work without .NET SDK or Runtime."
               );
             }
           });
