@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.0.0]
+### Changed
+- Rename the extension to xfmt with extension ID `ali50m.xfmt`.
+- Replace the upstream icon with a distinct formatter icon.
+- Clarify independent maintenance and upstream attribution.
+- Update marketplace publishing and GitHub Release artifacts to use the xfmt package name.
+
 ## [1.8.1]
 ### Changed
 - Rename the extension to mfmt with extension ID `ali50m.mfmt`.

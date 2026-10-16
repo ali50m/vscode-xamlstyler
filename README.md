@@ -1,6 +1,8 @@
-# mfmt
+# xfmt
 
-A personal markup formatter for VS Code, maintained by ali50m.
+An independently maintained XAML and AXAML formatter for VS Code by ali50m.
+
+xfmt is an independent fork of [vscode-xamlstyler](https://github.com/dabbinavo/vscode-xamlstyler). It is not affiliated with or endorsed by the upstream maintainers, the XamlStyler project, or Microsoft.
 
 ## Features
 
@@ -10,11 +12,11 @@ A personal markup formatter for VS Code, maintained by ali50m.
 
 ## Usage
 
-Select **mfmt** with **Format Document With...**. To use it by default:
+Select **xfmt** with **Format Document With...**. To use it by default:
 
 ```json
 "[xml]": {
-  "editor.defaultFormatter": "ali50m.mfmt"
+  "editor.defaultFormatter": "ali50m.xfmt"
 }
 ```
 

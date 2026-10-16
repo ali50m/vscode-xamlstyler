@@ -16,9 +16,9 @@ export const documentSelector: vscode.DocumentFilter[] = languages.map(
 );
 
 export const outputChannel =
-  vscode.window.createOutputChannel("mfmt");
+  vscode.window.createOutputChannel("xfmt");
 
-export const extensionId = "ali50m.mfmt";
+export const extensionId = "ali50m.xfmt";
 
 export const extensionPath =
   vscode.extensions.getExtension(extensionId)?.extensionPath;

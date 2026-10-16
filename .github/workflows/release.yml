@@ -13,7 +13,7 @@ jobs:
   release:
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
@@ -49,7 +49,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Test formatter and CLI
         run: dotnet test ./tools/XamlStyler/src/XamlStyler.Cli.slnx -c Release
@@ -70,34 +70,38 @@ jobs:
           if [ "$PRERELEASE" = "true" ]; then
             package_args+=(--pre-release)
           fi
-          npx --yes --package @vscode/vsce vsce package --out "mfmt-${PACKAGE_VERSION}.vsix" "${package_args[@]}"
+          npx --yes --package @vscode/vsce vsce package --out "xfmt-${PACKAGE_VERSION}.vsix" "${package_args[@]}"
 
       - name: Publish VSCode Extension
+        id: publish_vscode
         continue-on-error: true
         env:
           VSCE_TOKEN: ${{ secrets.TOKEN }}
         run: |
           if [ -z "$VSCE_TOKEN" ]; then
-            echo "TOKEN secret not set. Skipping VSCode publication." && exit 0
+            echo "::error::TOKEN secret not set. VSCode publication cannot proceed."
+            exit 1
           fi
           if [ "${{ inputs.prerelease }}" = "true" ]; then
-            npx --yes --package @vscode/vsce vsce publish --packagePath "mfmt-${PACKAGE_VERSION}.vsix" --pre-release -p "$VSCE_TOKEN"
+            npx --yes --package @vscode/vsce vsce publish --packagePath "xfmt-${PACKAGE_VERSION}.vsix" --pre-release -p "$VSCE_TOKEN"
           else
-            npx --yes --package @vscode/vsce vsce publish --packagePath "mfmt-${PACKAGE_VERSION}.vsix" -p "$VSCE_TOKEN"
+            npx --yes --package @vscode/vsce vsce publish --packagePath "xfmt-${PACKAGE_VERSION}.vsix" -p "$VSCE_TOKEN"
           fi
 
       - name: Publish Open VSX Extension
+        id: publish_openvsx
         continue-on-error: true
         env:
           OVSX_TOKEN: ${{ secrets.OVSX_TOKEN }}
         run: |
           if [ -z "$OVSX_TOKEN" ]; then
-            echo "OVSX_TOKEN secret not set. Skipping Open VSX publication." && exit 0
+            echo "::error::OVSX_TOKEN secret not set. Open VSX publication cannot proceed."
+            exit 1
           fi
           if [ "${{ inputs.prerelease }}" = "true" ]; then
-            npx ovsx publish ./mfmt-${{ env.PACKAGE_VERSION }}.vsix --pre-release -p "$OVSX_TOKEN"
+            npx ovsx publish ./xfmt-${{ env.PACKAGE_VERSION }}.vsix --pre-release -p "$OVSX_TOKEN"
           else
-            npx ovsx publish ./mfmt-${{ env.PACKAGE_VERSION }}.vsix -p "$OVSX_TOKEN"
+            npx ovsx publish ./xfmt-${{ env.PACKAGE_VERSION }}.vsix -p "$OVSX_TOKEN"
           fi
 
       - name: Create GitHub release and upload VSIX
@@ -109,8 +113,21 @@ jobs:
           if [ "$PRERELEASE" = "true" ]; then
             release_args+=(--prerelease)
           fi
-          gh release create "v${PACKAGE_VERSION}" "./mfmt-${PACKAGE_VERSION}.vsix" \
+          gh release create "v${PACKAGE_VERSION}" "./xfmt-${PACKAGE_VERSION}.vsix" \
             --title "v${PACKAGE_VERSION}" \
             --target "$GITHUB_SHA" \
             --generate-notes \
             "${release_args[@]}"
+
+      - name: Check marketplace publication results
+        if: ${{ !cancelled() && (steps.publish_vscode.outcome != 'skipped' || steps.publish_openvsx.outcome != 'skipped') }}
+        env:
+          VSCODE_OUTCOME: ${{ steps.publish_vscode.outcome }}
+          OPENVSX_OUTCOME: ${{ steps.publish_openvsx.outcome }}
+        run: |
+          echo "VS Code Marketplace: $VSCODE_OUTCOME" >> "$GITHUB_STEP_SUMMARY"
+          echo "Open VSX: $OPENVSX_OUTCOME" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$VSCODE_OUTCOME" != "success" ] || [ "$OPENVSX_OUTCOME" != "success" ]; then
+            echo "::error::One or more marketplace publications failed. Check the publish step logs before retrying."
+            exit 1
+          fi

@@ -1,14 +1,14 @@
 {
-  "name": "mfmt",
-  "displayName": "mfmt",
-  "version": "1.8.1",
+  "name": "xfmt",
+  "displayName": "xfmt",
+  "version": "2.0.0",
   "publisher": "ali50m",
-  "description": "Personal markup formatter for VS Code.",
+  "description": "Independently maintained XAML and AXAML formatter by ali50m, derived from vscode-xamlstyler.",
   "author": {
     "name": "ali50m"
   },
   "license": "MIT",
-  "icon": "media/logo-winui.png",
+  "icon": "media/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/ali50m/vscode-xamlstyler"
@@ -56,7 +56,7 @@
           "xamlstyler.format.enable": {
             "type": "boolean",
             "default": true,
-            "description": "Enable mfmt to format .xaml and .axaml files."
+            "description": "Enable xfmt to format .xaml and .axaml files."
           },
           "xamlstyler.useGlobalTool": {
             "type": "boolean",
